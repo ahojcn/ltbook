@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>激活</title>
+
+    <style>
+        * {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <div style="text-align: center">
+        <div style="display: inline;">
+
+            {# 如果激活成功，显示跳转 #}
+            {% if status == 0 %}
+                {{ data.email }}
+                {{ msg }}
+                <div style="color: red;">
+                    跳转到<a href="/login/">登录</a>
+                </div>
+            {% else %}
+                {{ msg }}
+                <div style="color: red;">
+                    没有收到邮件？重新发送验证邮件↓
+                </div>
+                <form method="post" action="/active/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table align="center">
+                        <tr>
+                            <td>
+                                <input placeholder="邮箱" name="email" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input placeholder="验证码" name="verify_code" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="/api/verify_code_img/" style="width: 150px" onclick="this.src+='?'"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="submit" style="width: 150px">发送激活邮件</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="/login/">登录</a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script></script>
+
+</body>
+</html>

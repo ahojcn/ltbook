@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册 - lt book</title>
+</head>
+<body>
+
+<div>
+    <div style="text-align: center">
+        <div style="display: inline;">
+            <div>
+                <h2>注册</h2>
+
+                <div id="msg" style="color: red">{{ msg }}</div>
+
+                <form method="post" action="/register/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table align="center">
+                        <tr>
+                            <td>
+                                <span>邮箱：</span>
+                            </td>
+                            <td>
+                                <input type="text" name="email"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>密码：</span>
+                            </td>
+                            <td>
+                                <input type="password" name="pwd">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>重复密码：</span>
+                            </td>
+                            <td>
+                                <input type="password" name="c_pwd">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>验证码：</span>
+                            </td>
+                            <td>
+                                <input type="text" name="verify_code">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <img src="/api/verify_code_img/" alt="verify_code" onclick="this.src+='?'"
+                                     style="width: 150px">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button type="submit" style="width: 150px">注册</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <a href="/login/">
+                                    已有账号？登录
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript"></script>
+
+</body>
+</html>
