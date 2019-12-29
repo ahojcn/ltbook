@@ -18,34 +18,34 @@ from django.template import loader
 from app import models
 
 
-def upload_avatar(request):
-    """
-    上传头像图片
-    """
-    context = {'status': 0, 'msg': '', 'data': {}}
-
-    if request.method == 'POST':
-        user_id = request.session.get('user_id')
-        user = models.UserBase.objects.filter(id=user_id)
-
-        if len(user) == 0:
-            return redirect(to=login)
-
-        user = user[0]
-
-        f = request.FILES.get('avatar')
-
-        fpath = os.path.join(settings.STATIC_URL, 'img/avatar/', str(user.id))
-        if not os.path.exists(fpath):
-            os.makedirs(fpath)
-        fname = str(datetime.datetime.now().timestamp()) + f.name
-
-        with open(os.path.join(fpath, fname), 'wb') as pic:
-            for c in f.chunks():
-                pic.write(c)
-
-        user.avatar = fname
-        return redirect(to=index)
+# def upload_avatar(request):
+#     """
+#     上传头像图片
+#     """
+#     context = {'status': 0, 'msg': '', 'data': {}}
+#
+#     if request.method == 'POST':
+#         user_id = request.session.get('user_id')
+#         user = models.UserBase.objects.filter(id=user_id)
+#
+#         if len(user) == 0:
+#             return redirect(to=login)
+#
+#         user = user[0]
+#
+#         f = request.FILES.get('avatar')
+#
+#         fpath = os.path.join(settings.STATIC_URL, 'img/avatar/', str(user.id))
+#         if not os.path.exists(fpath):
+#             os.makedirs(fpath)
+#         fname = str(datetime.datetime.now().timestamp()) + f.name
+#
+#         with open(os.path.join(fpath, fname), 'wb') as pic:
+#             for c in f.chunks():
+#                 pic.write(c)
+#
+#         user.avatar = fname
+#         return redirect(to=index)
 
 
 def line(request):
@@ -348,7 +348,7 @@ def add_addr_book(request):
             return redirect(to=index)
 
         try:
-            models.AddressBook.objects.create(user=user, name=name, email=email, tel=tel, addr=addr)
+            models.AddressBook.objects.create(user=user, name=name, email=email, tel=tel, addr=addr, add_time=datetime.datetime.now())
         except Exception as e:
             print(e)
             raise

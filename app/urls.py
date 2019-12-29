@@ -14,7 +14,7 @@ urlpatterns = [
     path('del_addr_book/', views.del_addr_book),  # 删除
     path('update_addr_book/', views.update_addr_book),  # 修改
 
-    path('upload_avatar/', views.upload_avatar),  # 上传头像
+    # path('upload_avatar/', views.upload_avatar),  # 上传头像
 
     path('api/line/', views.line),  # 获取统计数据
 

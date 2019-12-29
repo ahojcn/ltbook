@@ -18,6 +18,10 @@
                         <div class="alert alert-danger">
                             {{ msg }}
                         </div>
+                    {% elif status == 0 %}
+                        <div class="alert alert-success">
+                            {{ msg }}
+                        </div>
                     {% endif %}
 
                     <form method="post" action="/register/" enctype="multipart/form-data">
