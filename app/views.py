@@ -227,6 +227,8 @@ def del_addr_book(request):
 
         user = user[0]
 
+        print(user.email)
+
         id = request.POST.get('id')
         print(id)
         l = models.AddressBook.objects.filter(id=id, user=user)
