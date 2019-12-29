@@ -35,15 +35,12 @@ def upload_avatar(request):
 
         f = request.FILES.get('avatar')
 
-        fpath = settings.STATIC_URL + 'img/avatar/' + str(user.id) + '/'
-
-        print(fpath)
-
-        if os.path.exists(fpath) is False:
+        fpath = os.path.join(settings.STATIC_URL, 'img/avatar/', str(user.id))
+        if not os.path.exists(fpath):
             os.makedirs(fpath)
         fname = str(datetime.datetime.now().timestamp()) + f.name
 
-        with open(fpath + fname, 'wb') as pic:
+        with open(os.path.join(fpath, fname), 'wb') as pic:
             for c in f.chunks():
                 pic.write(c)
 
