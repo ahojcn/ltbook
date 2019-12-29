@@ -3,62 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>激活</title>
-
-    <style>
-        * {
-            font-weight: 700;
-        }
-    </style>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div>
     <div style="text-align: center">
         <div style="display: inline;">
+            <div class="card border-primary" style="width: 500px; margin: 0 auto; margin-top: 10%">
+                <div class="card-body">
+                    <h2>激活</h2>
 
-            {# 如果激活成功，显示跳转 #}
-            {% if status == 0 %}
-                {{ data.email }}
-                {{ msg }}
-                <div style="color: red;">
-                    跳转到<a href="/login/">登录</a>
+                    {# 如果激活成功，显示跳转 #}
+                    {% if status == 0 %}
+                        <div class="alert alert-success">
+                            {{ data.email }}
+                            <br>
+                            {{ msg }}
+                            <br>
+                            跳转到<a href="/login/">登录</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            {{ msg }}
+                            <br>
+                            没有收到邮件？重新发送验证邮件↓
+                        </div>
+                        <form method="post" action="/active/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <table align="center">
+                                <tr>
+                                    <td>
+                                        <input class="form-control" placeholder="邮箱" name="email" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input class="form-control" placeholder="验证码" name="verify_code" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="/api/verify_code_img/" style="width: 100%" onclick="this.src+='?'"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button class="btn btn-primary" type="submit" style="width: 100%">发送激活邮件</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="/login/">已有账号？登录</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    {% endif %}
                 </div>
-            {% else %}
-                {{ msg }}
-                <div style="color: red;">
-                    没有收到邮件？重新发送验证邮件↓
-                </div>
-                <form method="post" action="/active/" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table align="center">
-                        <tr>
-                            <td>
-                                <input placeholder="邮箱" name="email" type="text">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input placeholder="验证码" name="verify_code" type="text">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="/api/verify_code_img/" style="width: 150px" onclick="this.src+='?'"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" style="width: 150px">发送激活邮件</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="/login/">登录</a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>

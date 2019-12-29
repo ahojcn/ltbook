@@ -3,10 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <title>Home - lt book</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/highcharts/7.2.0/highcharts.js"></script>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.bundle.js"></script>
 </head>
 <body>
+
 <div>
-    {{ data }}
+    <div style="text-align: center;">
+        <div style="display: inline;">
+            <div class="card">
+                <div class="card-body">
+                    <img class="img-thumbnail" id="avatar" src="{{ data.avatar }}"
+                         style="width: 100px">
+                    <form style="display:none" enctype="multipart/form-data" action="/upload_avatar/" method="post">
+                        {% csrf_token %}
+                        <input type="file" name="avatar" id="file">
+                        <input type="submit" id="upload_submit">
+                    </form>
+
+                    <br>
+                    <span>{{ data.email }}</span>
+
+                    <form method="post" action="/logout/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">退出登录</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card border-primary" style="width: 500px; margin: 0 auto;">
+                            <div class="card-body">
+                                {% if status != 0 %}
+                                    <div class="alert alert-danger">
+                                        {{ msg }}
+                                    </div>
+                                {% endif %}
+                                <h3>添加</h3>
+                                <form method="post" action="/add_addr_book/">
+                                    {% csrf_token %}
+                                    <table align="center" style="border: #007bff">
+                                        <tr>
+                                            <td>
+                                                <input class="form-control" name="name" placeholder="姓名">
+                                                <input class="form-control" name="addr" placeholder="地址">
+                                                <input class="form-control" name="tel" placeholder="电话">
+                                                <input class="form-control" name="email" placeholder="邮件">
+                                                <button class="btn btn-primary" type="submit" style="width: 100%">添加
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm">
+                        <div class="card border-primary" style="margin: 0 auto;">
+                            <div class="card-body">
+                                <h3>查找</h3>
+                                <form action="/search/" method="post">
+                                    {% csrf_token %}
+                                    <table align="center">
+                                        <tr>
+                                            <td>
+                                                <input class="form-control" name="key" type="text" placeholder="关键词">
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-primary" type="submit">筛选</button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+
+                                <table class="table table-striped" align="center">
+                                    <thead>
+                                    <tr>
+                                        <td scope="col">#</td>
+                                        <td scope="col">姓名</td>
+                                        <td scope="col">电话</td>
+                                        <td scope="col">邮件</td>
+                                        <td scope="col">地址</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if data.search %}
+                                        {% for item in data.search %}
+                                            <tr>
+                                                <td>{{ item.id }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td>{{ item.tel }}</td>
+                                                <td>{{ item.email }}</td>
+                                                <td>{{ item.addr }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div>
+                <h3>
+                    今日增加：
+                    <span class="badge badge-success">{{ data.toady_add }}</span>
+                    条
+                </h3>
+
+                <div id="container" style="width: 600px;height:400px; margin: 0 auto"></div>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <td scope="col">#</td>
+                        <td scope="col">姓名</td>
+                        <td scope="col">电话</td>
+                        <td scope="col">邮件</td>
+                        <td scope="col">地址</td>
+                        <td scope="col">操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data.addr_books %}
+                        <tr>
+                            <td>
+                                {% if item.id == '' %}
+                                    -
+                                {% else %}
+                                    {{ item.id }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.name == '' %}
+                                    -
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.tel == '' %}
+                                    -
+                                {% else %}
+                                    {{ item.tel }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.email == '' %}
+                                    -
+                                {% else %}
+                                    {{ item.email }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.addr == '' %}
+                                    -
+                                {% else %}
+                                    {{ item.addr }}
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <button class="btn btn-outline-primary" data-toggle="modal" data-target="#myModal1">修改
+                                </button>
+                                <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
+                                     aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    {% csrf_token %}
+                                                    <table align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <input id="update_name" class="form-control" name="name"
+                                                                       placeholder="姓名" value="{{ item.name }}">
+                                                                <input id="update_addr" class="form-control" name="addr"
+                                                                       placeholder="地址" value="{{ item.addr }}">
+                                                                <input id="update_tel" class="form-control" name="tel"
+                                                                       placeholder="电话"
+                                                                       value="{{ item.tel }}">
+                                                                <input id="update_email" class="form-control"
+                                                                       name="email"
+                                                                       placeholder="邮件" value="{{ item.email }}">
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">算了
+                                                </button>
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="handleUpdate('{{ item.id }}')">提交更改
+                                                </button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal -->
+                                </div>
+
+                                <button class="btn btn-outline-danger" data-toggle="modal" data-target="#myModal2">删除
+                                </button>
+                                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog"
+                                     aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                数据无价，谨慎操作！
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">算了
+                                                </button>
+                                                <button type="button" class="btn btn-danger"
+                                                        onclick="handleDelete('{{ item.id }}')">确定
+                                                </button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal -->
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    // 上传头像
+    let img = document.getElementById('avatar');
+    let upload = document.getElementById('file');
+    let upload_btn = document.getElementById('upload_submit');
+    img.onclick = function () {
+        upload.click();
+    };
+    upload.onchange = function () {
+        upload_btn.click();
+    };
+
+    // 获取统计数据
+    $.get('/api/line/', function (res) {
+        Highcharts.chart('container', {
+            title: {
+                text: '近期变化'
+            },
+            xAxis: {
+                categories: res['data']['xAxis']
+            },
+            series: res['data']['series']
+        });
+    });
+
+    // 点击删除
+    function handleDelete(id) {
+        $.post('/del_addr_book/', {id: id}, function (res) {
+            alert(res['msg']);
+            if (res['status'] === 0) {
+                window.location.reload();
+            }
+        })
+    }
+
+    // 点击更新
+    function handleUpdate(id) {
+        let name = $('#update_name')[0].value;
+        let email = $('#update_email')[0].value;
+        let tel = $('#update_tel')[0].value;
+        let addr = $('#update_addr')[0].value;
+
+        $.post('/update_addr_book/', {
+            id: id,
+            name: name,
+            email: email,
+            tel: tel,
+            addr: addr
+        }, function (res) {
+            alert(res['msg']);
+            if (res['status'] === 0) {
+                window.location.reload();
+            }
+        })
+    }
+</script>
 </body>
 </html>

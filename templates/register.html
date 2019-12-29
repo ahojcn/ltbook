@@ -3,75 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>注册 - lt book</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div>
     <div style="text-align: center">
         <div style="display: inline;">
-            <div>
-                <h2>注册</h2>
+            <div class="card border-primary" style="width: 500px; margin: 0 auto; margin-top: 10%">
+                <div class="card-body">
+                    <h2>注册</h2>
 
-                <div id="msg" style="color: red">{{ msg }}</div>
+                    {% if status != 0 %}
+                        <div class="alert alert-danger">
+                            {{ msg }}
+                        </div>
+                    {% endif %}
 
-                <form method="post" action="/register/" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table align="center">
-                        <tr>
-                            <td>
-                                <span>邮箱：</span>
-                            </td>
-                            <td>
-                                <input type="text" name="email"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>密码：</span>
-                            </td>
-                            <td>
-                                <input type="password" name="pwd">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>重复密码：</span>
-                            </td>
-                            <td>
-                                <input type="password" name="c_pwd">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>验证码：</span>
-                            </td>
-                            <td>
-                                <input type="text" name="verify_code">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <img src="/api/verify_code_img/" alt="verify_code" onclick="this.src+='?'"
-                                     style="width: 150px">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <button type="submit" style="width: 150px">注册</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <a href="/login/">
-                                    已有账号？登录
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+                    <form method="post" action="/register/" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table align="center">
+                            <tr>
+                                <td>
+                                    <input class="form-control" style="width: 100%" placeholder="邮箱" type="text"
+                                           name="email"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="form-control" style="width: 100%" placeholder="密码" type="password"
+                                           name="pwd">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="form-control" style="width: 100%" placeholder="重复密码" type="password"
+                                           name="c_pwd">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="form-control" style="width: 100%" placeholder="验证码" type="text"
+                                           name="verify_code">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="/api/verify_code_img/" alt="verify_code" onclick="this.src+='?'"
+                                         style="width: 100%">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button class="btn btn-primary" type="submit" style="width: 100%">注册</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/login/">
+                                        已有账号？登录
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
