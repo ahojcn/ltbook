@@ -47,6 +47,56 @@ from app import models
 #         user.avatar = fname
 #         return redirect(to=index)
 
+def maps(request):
+    """
+    获取各省的数据
+    """
+    context = {'status': 0, 'msg': '', 'data': []}
+
+    user_id = request.session.get('user_id')
+    user = models.UserBase.objects.filter(id=user_id)
+
+    if len(user) == 0:
+        context['status'] = -1
+        context['msg'] = '未登录'
+        return JsonResponse(context)
+
+    user = user[0]
+
+    books = models.AddressBook.objects.filter(user=user)
+    data = []
+    names = {}
+    for i in books:
+        names[i.addr.split(',')[0]] = 0
+
+    for i in books:
+        names[i.addr.split(',')[0]] += 1
+
+    for k in names.keys():
+        data.append({
+            'name': k,
+            'value': names[k]
+        })
+        # if k.find('省') != -1:
+        #     data.append({
+        #         'name': k.split('省')[0],
+        #         'value': names[k]
+        #     })
+        # elif k.find('市') != -1:
+        #     data.append({
+        #         'name': k.split('市')[0],
+        #         'value': names[k]
+        #     })
+        # else:
+        #     data.append({
+        #         'name': k[0:2],
+        #         'value': names[k]
+        #     })
+
+    context['data'] = data
+    print(data)
+    return JsonResponse(context)
+
 
 def line(request):
     """
@@ -303,40 +353,6 @@ def add_addr_book(request):
 
         user = user[0]
 
-        # 获取用户基本信息
-        context['data'] = {
-            'user_id': user.id,
-            'is_active': user.is_active,
-            'email': user.email,
-            'tel': user.tel,
-            'reg_time': user.reg_time,
-            'avatar': user.avatar,
-            'gender': user.gender,
-            'name': user.name,
-        }
-
-        # 分页获取用户的通讯录
-        addr_books = models.AddressBook.objects.filter(user=user)
-
-        tmp = []
-        for item in addr_books:
-            tmp.append({
-                'id': item.id,
-                'name': item.name,
-                'tel': item.tel,
-                'email': item.email,
-                'addr': item.addr,
-                'add_time': item.add_time
-            })
-        context['data'].update({'addr_books': tmp})
-
-        # 获取每日增加量
-        now = datetime.datetime.now()
-        start = now - datetime.timedelta(hours=23, minutes=59, seconds=59)
-        today_addr_book = models.AddressBook.objects.filter(user=user, add_time__gt=start)
-
-        context['data'].update({'toady_add': len(today_addr_book)})
-
         name = request.POST.get('name')
         email = request.POST.get('email')
         tel = request.POST.get('tel')
@@ -348,12 +364,15 @@ def add_addr_book(request):
             return redirect(to=index)
 
         try:
-            models.AddressBook.objects.create(user=user, name=name, email=email, tel=tel, addr=addr, add_time=datetime.datetime.now())
+            models.AddressBook.objects.create(user=user, name=name, email=email, tel=tel, addr=addr,
+                                              add_time=datetime.datetime.now())
         except Exception as e:
             print(e)
             raise
 
-        return redirect(to=index)
+        context['status'] = 0
+        context['msg'] = '增加成功'
+        return JsonResponse(context)
 
 
 def logout(request):
@@ -583,3 +602,21 @@ def verify_code_img(request):
         im.save(buf, 'png')
 
         return HttpResponse(buf.getvalue(), 'image/png')
+
+
+# 获取省信息
+def area2(request):
+    list = models.AreaInfo.objects.filter(aParent__isnull=True)
+    list2 = []
+    for item in list:
+        list2.append([item.id, item.atitle])
+    return JsonResponse({'data': list2})
+
+
+# 根据pid查询子级区域信息
+def area3(request, pid):
+    list = models.AreaInfo.objects.filter(aParent_id=pid)
+    list2 = []
+    for item in list:
+        list2.append([item.id, item.atitle])
+    return JsonResponse({'data': list2})

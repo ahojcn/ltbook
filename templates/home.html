@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Home - lt book</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/highcharts/7.2.0/highcharts.js"></script>
     <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.bundle.js"></script>
 </head>
@@ -44,21 +43,30 @@
                                     </div>
                                 {% endif %}
                                 <h3>添加</h3>
-                                <form method="post" action="/add_addr_book/">
-                                    {% csrf_token %}
-                                    <table align="center" style="border: #007bff">
-                                        <tr>
-                                            <td>
-                                                <input class="form-control" name="name" placeholder="姓名">
-                                                <input class="form-control" name="addr" placeholder="地址">
-                                                <input class="form-control" name="tel" placeholder="电话">
-                                                <input class="form-control" name="email" placeholder="邮件">
-                                                <button class="btn btn-primary" type="submit" style="width: 100%">添加
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </form>
+
+                                <table align="center" style="border: #007bff">
+                                    <tr>
+                                        <td>
+                                            <input id="add_name" class="form-control" name="name" placeholder="姓名">
+                                            <input id="add_tel" class="form-control" name="tel" placeholder="电话">
+                                            <input id="add_email" class="form-control" name="email" placeholder="邮件">
+                                            {#                                            <input id="add_addr" style="display: none" class="form-control" name="addr"#}
+                                            {#                                                   placeholder="地址">#}
+                                            <select class="custom-select" id="pro">
+                                                <option value="">请选择省</option>
+                                            </select>
+                                            <select class="custom-select" id="city">
+                                                <option value="">请选择市</option>
+                                            </select>
+                                            <select class="custom-select" id="dis">
+                                                <option value="">请选择区县</option>
+                                            </select>
+                                            <button class="btn btn-primary" id="btn_add" style="width: 100%">
+                                                添加
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -121,6 +129,7 @@
                 </h3>
 
                 <div id="container" style="width: 600px;height:400px; margin: 0 auto"></div>
+                <div id="china_map" style="width: 600px;height:400px; margin: 0 auto"></div>
 
                 <table class="table table-striped">
                     <thead>
@@ -250,17 +259,44 @@
     </div>
 </div>
 
+<script src="https://cdn.bootcss.com/highcharts/7.2.0/highcharts.js"></script>
+<script src="https://cdn.bootcss.com/highcharts/7.2.0/modules/map.js"></script>
+
 <script>
-    // 上传头像
-    // let img = document.getElementById('avatar');
-    // let upload = document.getElementById('file');
-    // let upload_btn = document.getElementById('upload_submit');
-    // img.onclick = function () {
-    //         upload.click();
-    // };
-    // upload.onchange = function () {
-    //         upload_btn.click();
-    // };
+    let md = {};
+    let data = [];
+    $.getJSON('https://data.jianshukeji.com/jsonp?filename=geochina/china.json&callback=?', function (mapdata) {
+        md = mapdata;
+    });
+
+    $.get('api/maps/', function (res) {
+        data = res.data;
+    });
+
+    setTimeout(() => {
+        console.log(data);
+
+        var map = Highcharts.mapChart('china_map', {
+            title: {
+                text: '通讯录区域分布统计'
+            },
+            colorAxis: {
+                stops: [
+                    [0, 'rgb(198, 228, 139)'],
+                    [0.5, 'rgb(35, 154, 59)'],
+                    [1, 'rgb(25, 97, 39)'],
+                ],
+                min: 0,
+                max: 5
+            },
+            series: [{
+                mapData: md,
+                data: data,
+                joinBy: ['fullname', 'name']
+            }],
+        });
+
+    }, 2000);
 
     // 获取统计数据
     $.get('/api/line/', function (res) {
@@ -285,6 +321,21 @@
         })
     }
 
+    // 添加
+    $('#btn_add')[0].onclick = function () {
+        $.post('/add_addr_book/', {
+            name: $('#add_name').val(),
+            tel: $('#add_tel').val(),
+            email: $('#add_email').val(),
+            addr: $('#pro option:selected')[0].innerText + ',' + $('#city option:selected')[0].innerText + ',' + $('#dis option:selected')[0].innerText
+        }, function (res) {
+            alert(res['msg']);
+            if (res['status'] === 0) {
+                window.location.reload();
+            }
+        })
+    };
+
     // 点击更新
     function handleUpdate(id) {
         let name = $('#update_name')[0].value;
@@ -305,6 +356,39 @@
             }
         })
     }
+
+    $(function () {
+        //页面加载完成后获取省信息，并添加到省select
+        $.get('/area2/', function (dic) {
+            pro = $('#pro');
+            $.each(dic.data, function (index, item) {
+                pro.append('<option value=' + item[0] + '>' + item[1] + '</option>');
+            })
+        });
+        //为省select绑定change事件，获取市信息，并添加到市select
+        $('#pro').change(function () {
+            $.get('/area3_' + $(this).val() + '/', function (dic) {
+                city = $('#city');
+                city.empty().append('<option value="">请选择市</option>');
+                dis = $('#dis');
+                dis.empty().append('<option value="">请选择区县</option>');
+                $.each(dic.data, function (index, item) {
+                    city.append('<option value=' + item[0] + '>' + item[1] + '</option>');
+                })
+            });
+        });
+        //为市select绑定change事件，获取区县信息，并添加到区县select
+        $('#city').change(function () {
+            $.get('/area3_' + $(this).val() + '/', function (dic) {
+                dis = $('#dis');
+                dis.empty().append('<option value="">请选择区县</option>');
+                $.each(dic.data, function (index, item) {
+                    dis.append('<option value=' + item[0] + '>' + item[1] + '</option>');
+                })
+            })
+        });
+
+    });
 </script>
 </body>
 </html>

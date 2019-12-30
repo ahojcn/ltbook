@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="django" name="Django">
       <configuration>
-        <option name="rootFolder" value="$MODULE_DIR$/../ltbook" />
+        <option name="rootFolder" value="$MODULE_DIR$" />
         <option name="settingsModule" value="ltbook/settings.py" />
         <option name="manageScript" value="manage.py" />
         <option name="environment" value="&lt;map/&gt;" />
@@ -13,12 +13,11 @@
     </facet>
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$/../ltbook" />
+    <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="vue" level="application" />
-    <orderEntry type="library" name="highcharts" level="application" />
-    <orderEntry type="library" name="bootstrap.bundle" level="application" />
+    <orderEntry type="library" name="china" level="application" />
+    <orderEntry type="library" name="map" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

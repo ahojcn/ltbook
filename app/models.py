@@ -31,3 +31,29 @@ class AddressBook(models.Model):
     email = models.CharField(max_length=128, verbose_name='邮箱')
     addr = models.CharField(max_length=1024, verbose_name='地址')
     add_time = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
+
+
+class AreaInfo(models.Model):
+    """
+    地址模型类
+    """
+    # 地区名称
+    atitle = models.CharField(verbose_name='标题', max_length=20)
+    # 自关联属性
+    aParent = models.ForeignKey('self', null=True, blank=True, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return self.atitle
+
+    def title(self):
+        return self.atitle
+
+    title.admin_order_field = 'atitle'
+    title.short_description = '地区名称'
+
+    def parent(self):
+        if self.aParent is None:
+            return ''
+        return self.aParent.atitle
+
+    parent.short_description = '父级地区名称'

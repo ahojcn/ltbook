@@ -16,7 +16,11 @@ urlpatterns = [
 
     # path('upload_avatar/', views.upload_avatar),  # 上传头像
 
+    path('area2/', views.area2),
+    path('area3_<int:pid>/', views.area3),
+
     path('api/line/', views.line),  # 获取统计数据
+    path('api/maps/', views.maps),  # 获取地图数据
 
     path('api/verify_code_img/', views.verify_code_img),  # 验证码
 ]
