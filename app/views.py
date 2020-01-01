@@ -324,8 +324,6 @@ def update_addr_book(request):
             context['msg'] = '参数不足'
             return JsonResponse(context)
 
-        print(id, name, email, tel, addr)
-
         l = models.AddressBook.objects.get(user=user, id=id)
         l.name = name
         l.email = email
